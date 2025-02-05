@@ -19,10 +19,23 @@ class DB:
         self.commit()
 
     def create_user_table(self):
-        pass
+        self.cursor.execute("""
+            CREATE TABLE users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(64) NOT NULL,
+                phone VARCHAR(13) NOT NULL,
+                username VARCHAR(64) NOT NULL ,
+                password VARCHAR(255) NOT NULL,
+                UNIQUE(usrname)
+                );
+
+        )""")
 
     def create_room_table(self):
-        pass
+        self.cursor.execute("""
+                
+                            
+                """)
 
     def create_book_table(self):
         pass
