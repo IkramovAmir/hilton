@@ -36,10 +36,28 @@ class DB:
         self.commit()
 
     def create_room_table(self):
-        pass
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS rooms (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                number INT NOT NULL,
+                type VARCHAR(32) NOT NULL,
+                space TINYINT NOT NULL,
+                price DECIMAL(10, 2) NOT NULL,
+                UNIQUE(number)
+            );
+        """)
+        self.commit()
 
     def create_book_table(self):
-        pass
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS books (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                room_id INT NOT NULL,
+                days VARCHAR(512)
+            );
+        """)
+        self.commit()
 
     def commit(self):
         self.connection.commit()
