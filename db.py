@@ -12,18 +12,15 @@ class DB:
         if not self.connection.is_connected():
             raise mysql.connector.Error("Connection Error")
         self.cursor: mysql.connector.cursor.MySQLCursor = self.connection.cursor()
-        self.db_name = db_name
+
+        self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
+        self.cursor.execute(f"USE {db_name}")
+        self.start()
 
     def start(self):
-        self.create_db()
-        self.cursor.execute("USE %s", (self.db_name,))
         self.create_user_table()
         self.create_room_table()
         self.create_book_table()
-    
-    def create_db(self):
-        self.cursor.execute("CREATE DATABASE IF NOT EXISTS %s", (self.db_name,))
-        self.commit()
 
     def create_user_table(self):
         self.cursor.execute("""
