@@ -1,6 +1,6 @@
 from flask import Flask
 import settings
-from db import DB
+from db import DB, User
 
 
 app = Flask(__name__)

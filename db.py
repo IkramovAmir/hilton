@@ -1,4 +1,6 @@
+import hashlib
 import mysql.connector
+
 
 class DB:
     
@@ -11,7 +13,7 @@ class DB:
         )
         if not self.__connection.is_connected():
             raise mysql.connector.Error("Connection Error")
-        self.cursor: mysql.connector.cursor.MySQLCursor = self.connection.cursor()
+        self.cursor: mysql.connector.cursor.MySQLCursor = self.__connection.cursor()
 
         self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
         self.cursor.execute(f"USE {db_name}")
@@ -68,7 +70,20 @@ class DB:
 
 
 class User:
-    pass
+    
+    def __init__(self, name: str, phone: str, username: str, password: str):
+        self.name = name
+        self.phone = phone
+        self.username = username
+        self.password = hashlib.sha256(password.encode()).hexdigest()
+    
+    def save(self, db: DB):
+        db.cursor.execute(
+            """INSERT INTO users (name, phone, username, password)
+            VALUES (%s, %s, %s, %s);""",
+            (self.name, self.phone, self.username, self.password)
+        )
+        db.commit()
 
 
 class Room:
