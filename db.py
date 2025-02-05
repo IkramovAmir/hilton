@@ -13,6 +13,13 @@ class DB:
             raise mysql.connector.Error("Connection Error")
         self.cursor: mysql.connector.cursor.MySQLCursor = self.connection.cursor()
         self.db_name = db_name
+
+    def start(self):
+        self.create_db()
+        self.cursor.execute("USE %s", (self.db_name,))
+        self.create_user_table()
+        self.create_room_table()
+        self.create_book_table()
     
     def create_db(self):
         self.cursor.execute("CREATE DATABASE IF NOT EXISTS %s", (self.db_name,))
@@ -20,22 +27,19 @@ class DB:
 
     def create_user_table(self):
         self.cursor.execute("""
-            CREATE TABLE users (
+            CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(64) NOT NULL,
                 phone VARCHAR(13) NOT NULL,
                 username VARCHAR(64) NOT NULL ,
                 password VARCHAR(255) NOT NULL,
-                UNIQUE(usrname)
-                );
-
-        )""")
+                UNIQUE(username)
+            );
+        """)
+        self.commit()
 
     def create_room_table(self):
-        self.cursor.execute("""
-                
-                            
-                """)
+        pass
 
     def create_book_table(self):
         pass
