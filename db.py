@@ -3,26 +3,26 @@ import mysql.connector
 class DB:
     
     def __init__(self, host: str, port: str, user: str, password: str, db_name: str):
-        self.connection: mysql.connector.connection.MySQLConnection = mysql.connector.connect(
+        self.__connection: mysql.connector.connection.MySQLConnection = mysql.connector.connect(
             host=host,
             port=port,
             user=user,
             password=password
         )
-        if not self.connection.is_connected():
+        if not self.__connection.is_connected():
             raise mysql.connector.Error("Connection Error")
         self.cursor: mysql.connector.cursor.MySQLCursor = self.connection.cursor()
 
         self.cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
         self.cursor.execute(f"USE {db_name}")
-        self.start()
+        self.__start()
 
-    def start(self):
-        self.create_user_table()
-        self.create_room_table()
-        self.create_book_table()
+    def __start(self):
+        self.__create_user_table()
+        self.__create_room_table()
+        self.__create_book_table()
 
-    def create_user_table(self):
+    def __create_user_table(self):
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -35,7 +35,7 @@ class DB:
         """)
         self.commit()
 
-    def create_room_table(self):
+    def __create_room_table(self):
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS rooms (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -48,7 +48,7 @@ class DB:
         """)
         self.commit()
 
-    def create_book_table(self):
+    def __create_book_table(self):
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS books (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -60,11 +60,11 @@ class DB:
         self.commit()
 
     def commit(self):
-        self.connection.commit()
+        self.__connection.commit()
     
     def close(self):
         self.cursor.close()
-        self.connection.close()
+        self.__connection.close()
 
 
 class User:
