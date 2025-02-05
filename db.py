@@ -61,6 +61,11 @@ class DB:
         """)
         self.commit()
 
+    def get_user(self, username: str, password: str):
+        password = hashlib.sha256(password.encode()).hexdigest()
+        self.cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+        return self.cursor.fetchone()
+
     def commit(self):
         self.__connection.commit()
     
@@ -77,7 +82,7 @@ class User:
         self.username = username
         self.password = hashlib.sha256(password.encode()).hexdigest()
     
-    def save(self, db: DB):
+    def save(self, db: DB) -> int:
         db.cursor.execute(
             """INSERT INTO users (name, phone, username, password)
             VALUES (%s, %s, %s, %s);""",

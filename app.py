@@ -3,6 +3,9 @@ from flask import (
     render_template,
     request,
     session,
+    flash,
+    redirect,
+    url_for,
 )
 import settings
 from db import DB, User
@@ -27,13 +30,43 @@ def home_view():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_view():
-    return render_template("register.html")
+    if request.method == 'GET':
+        return render_template("register.html")
+    elif request.method == "POST":
+        form = request.form
+        
+        user = User(
+            name=form['name'],
+            phone=form['phone'],
+            username=form['username'],
+            password=form['password']
+        )
+        try:
+            user.save(db)
+        except:
+            flash("User already exists.")
+            return render_template("register.html")
 
+        return redirect(url_for('login_view'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_view():
-    return render_template("login.html")
+    if request.method == 'GET':
+        return render_template("login.html")
+    elif request.method == 'POST':
+        form = request.form
 
+        user = db.get_user(form['username'], form['password'])
+        if user:
+            session['user'] = form['username']
+            return redirect(url_for("profile_view"))
+        else:
+            flash("Invalid username or password.")
+            return render_template('login.html')
+
+@app.route('/profile')
+def profile_view():
+    pass
 
 @app.route('/logout', methods=['POST'])
 def logout_view():
