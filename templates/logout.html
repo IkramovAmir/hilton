@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Logout page{% endblock title %}
+
+{% block content %}
+
+<h1>Logout</h1>
+<p>You have been logged out successfully.</p>
+
+<form action="{{ url_for('logout_view') }}" method="POST">
+  <button  type="submit">Logout</button>
+</form>
+
+{% endblock content %}
+
+
+<style>
+    button{
+        background-color: blue; 
+        color: white;
+    }
+</style>

@@ -1,9 +1,7 @@
 import hashlib
 import mysql.connector
 
-
 class DB:
-    
     def __init__(self, host: str, port: str, user: str, password: str, db_name: str):
         self.__connection: mysql.connector.connection.MySQLConnection = mysql.connector.connect(
             host=host,
@@ -66,6 +64,19 @@ class DB:
         self.cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
         return self.cursor.fetchone()
 
+    def get_user_by_username(self, username: str):
+        self.cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        return self.cursor.fetchone()
+
+    def get_booked_rooms(self, user_id: int):
+        self.cursor.execute("""
+            SELECT rooms.number, rooms.type, rooms.price
+            FROM books
+            JOIN rooms ON rooms.id = books.room_id
+            WHERE books.user_id = %s
+        """, (user_id,))
+        return self.cursor.fetchall()
+
     def commit(self):
         self.__connection.commit()
     
@@ -73,9 +84,7 @@ class DB:
         self.cursor.close()
         self.__connection.close()
 
-
 class User:
-    
     def __init__(self, name: str, phone: str, username: str, password: str):
         self.name = name
         self.phone = phone
@@ -89,12 +98,3 @@ class User:
             (self.name, self.phone, self.username, self.password)
         )
         db.commit()
-
-
-class Room:
-    pass
-
-
-class Book:
-    pass
-

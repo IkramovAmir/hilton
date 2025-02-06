@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+
+<body>
+    <h1>Welcome, {{ user[1] }}!</h1> <!-- user[1] is name -->
+    <p><strong>Name:</strong> {{ user[1] }}</p> <!-- user[1] is name -->
+    <p><strong>Username:</strong> {{ user[2] }}</p> <!-- user[2] is username -->
+    <p><strong>Phone:</strong> {{ user[3] }}</p> <!-- user[3] is phone -->
+
+    <h2>Your Booked Rooms</h2>
+    {% if booked_rooms %}
+    <ul>
+        {% for room in booked_rooms %}
+        <li>Room Number: {{ room[0] }} | Type: {{ room[1] }} | Price: ${{ room[2] }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No rooms booked yet.</p>
+    {% endif %}
+
+    <form action="{{ url_for('logout_view') }}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</body>
+
+</html>

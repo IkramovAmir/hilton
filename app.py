@@ -1,15 +1,6 @@
-from flask import (
-    Flask,
-    render_template,
-    request,
-    session,
-    flash,
-    redirect,
-    url_for,
-)
+from flask import Flask, render_template, request, session, flash, redirect, url_for
 import settings
 from db import DB, User
-
 
 app = Flask(__name__)
 app.secret_key = settings.SECRET_KEY
@@ -22,11 +13,9 @@ db = DB(
     db_name=settings.DB_NAME
 )
 
-
 @app.route('/')
 def home_view():
     return render_template("index.html")
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_view():
@@ -55,7 +44,6 @@ def login_view():
         return render_template("login.html")
     elif request.method == 'POST':
         form = request.form
-
         user = db.get_user(form['username'], form['password'])
         if user:
             session['user'] = form['username']
@@ -66,126 +54,30 @@ def login_view():
 
 @app.route('/profile')
 def profile_view():
-    pass
+    if 'user' not in session:
+        flash("You must be logged in to view your profile.")
+        return redirect(url_for('login_view'))
+
+    username = session['user']
+    print(f"Session username: {username}") 
+ 
+    user = db.get_user_by_username(username)
+    
+    if user:
+        print(f"User data from DB: {user}") 
+       
+        booked_rooms = db.get_booked_rooms(user[0])  
+        
+        return render_template("profile.html", user=user, booked_rooms=booked_rooms)
+    else:
+        flash("User not found.")
+        return redirect(url_for('login_view'))
 
 @app.route('/logout', methods=['POST'])
 def logout_view():
-    pass
-
-
-@app.route('/rooms')
-def rooms_view():
-
-    rooms = [
-        {
-            "id": 1,
-            "room_number": 783,
-            "description": "fdsfasSome quick example text to build on the card title and make up the bulk of the card's content.",
-            "room_floor": 9,
-            "room_image": ["img/hilton-banner.avif", "img/hilton-banner.avif",],
-            "price":{
-                "currency":"usd",
-                "amount":90
-            },
-
-            "includes": [
-                "Good breakfast",
-                "Free private parking",
-                "Indoor swimming pool",
-                "Restaurant",
-                "Airport shuttle",
-                "Spa and wellness centre",
-                "Free WiFi",
-                "View",
-                "Family rooms",
-                "Room service",
-
-            ]
-
-        },
-                {
-            "id": 1,
-            "room_number": 783,
-            "description": "fdsfasSome quick example text to build on the card title and make up the bulk of the card's content.",
-            "room_floor": 9,
-            "room_image": ["img/hilton-banner.avif", "img/hilton-banner.avif",],
-            "price":{
-                "currency":"usd",
-                "amount":90
-            },
-
-            "includes": [
-                "Good breakfast",
-                "Free private parking",
-                "Indoor swimming pool",
-                "Restaurant",
-                "Airport shuttle",
-                "Spa and wellness centre",
-                "Free WiFi",
-                "View",
-                "Family rooms",
-                "Room service",
-
-            ]
-
-        },
-                        {
-            "id": 1,
-            "room_number": 783,
-            "description": "fdsfasSome quick example text to build on the card title and make up the bulk of the card's content.",
-            "room_floor": 9,
-            "room_image": ["img/hilton-banner.avif", "img/hilton-banner.avif",],
-            "price":{
-                "currency":"usd",
-                "amount":90
-            },
-
-            "includes": [
-                "Good breakfast",
-                "Free private parking",
-                "Indoor swimming pool",
-                "Restaurant",
-                "Airport shuttle",
-                "Spa and wellness centre",
-                "Free WiFi",
-                "View",
-                "Family rooms",
-                "Room service",
-
-            ]
-
-        },
-                                {
-            "id": 1,
-            "room_number": 783,
-            "description": "fdsfasSome quick example text to build on the card title and make up the bulk of the card's content.",
-            "room_floor": 9,
-            "room_image": ["img/hilton-banner.avif", "img/hilton-banner.avif",],
-            "price":{
-                "currency":"usd",
-                "amount":90
-            },
-
-            "includes": [
-                "Good breakfast",
-                "Free private parking",
-                "Indoor swimming pool",
-                "Restaurant",
-                "Airport shuttle",
-                "Spa and wellness centre",
-                "Free WiFi",
-                "View",
-                "Family rooms",
-                "Room service",
-
-            ]
-
-        },
-        
-    ]
-
-    return render_template("rooms.html", rooms=rooms)
-
+    session.pop('user', None)  
+    flash("You have been logged out successfully.")
+    return redirect(url_for('home_view'))
 
 if __name__ == "__main__":
     app.run(

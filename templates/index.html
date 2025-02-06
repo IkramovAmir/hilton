@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Home page{% endblock title %}
+{% block title %}Home Page{% endblock title %}
 
 {% block content %}
+<h1>Welcome to Hilton Hotel</h1>
 
-hi
-
+{% if session.get('user') %}
+<p >Hello, {{ session.get('user') }}! <a  href="{{ url_for('profile_view') }}">Go to your profile</a></p>
+{% else %}
+<p>New here? <a  style="text-decoration: none; color: red;" href="{{ url_for('register_view') }}">Register</a> or <a  style="text-decoration: none; color: red;"
+        href="{{ url_for('login_view') }}">Login</a></p>
+{% endif %}
 {% endblock content %}
